@@ -2,14 +2,14 @@ set1 = bytes(range(32)).decode('ascii')
 set2 = '!"#$%&\'()*+,-./:;<=>?@[\\]^_'
 
 
-def add_inverse_lookup(codepage):
+def add_inverse_lookup(codepage: dict) -> None:
     all_chars = list(codepage.keys())
     for char in all_chars:
         code = codepage[char]
         codepage[bytes(code)] = char
 
 
-def encode_text_mode(msg, codepage, magic, multiset):
+def encode_text_mode(msg: str, codepage: dict, magic: bytes, multiset: bool) -> tuple[bytes, int]:
     try:
         raw = sum([codepage[char] for char in msg], [])
     except KeyError:
@@ -36,7 +36,7 @@ def encode_text_mode(msg, codepage, magic, multiset):
     return enc, len(enc)
 
 
-def decode_text_mode(enc, codepage, magic, multiset):
+def decode_text_mode(enc: bytes, codepage: dict, magic: bytes, multiset: bool) -> tuple[str, int]:
     enc = bytes(enc)
     magic = list(magic)[0]
     if enc[0] != magic:
@@ -59,23 +59,23 @@ def decode_text_mode(enc, codepage, magic, multiset):
     return msg, len(msg)
 
 
-def pack_words(raw):
+def pack_words(raw: list[int] | bytes) -> bytes:
     if len(raw) % 3 != 0:
         raise ValueError('Length of "raw" must be integer multiple of 3')
 
     raw = list(raw)
     enc = []
     while len(raw) > 0:
-        word = ((raw.pop(0) * 40**2) +
-                (raw.pop(0) * 40**1) +
-                (raw.pop(0) * 40**0) +
+        word = ((raw.pop(0) * 40 ** 2) +
+                (raw.pop(0) * 40 ** 1) +
+                (raw.pop(0) * 40 ** 0) +
                 1)
         enc += [word >> 8, word & 0xFF]
 
     return bytes(enc)
 
 
-def unpack_words(words):
+def unpack_words(words: list[int] | bytes) -> bytes:
     if len(words) % 2 != 0:
         raise ValueError('Length of "words" must be even')
 
@@ -85,14 +85,14 @@ def unpack_words(words):
         word = ((words.pop(0) << 8) +
                 (words.pop(0) << 0))
         word -= 1
-        raw += [word // 40**2,
-                (word % 40**2) // 40**1,
-                ((word % 40**2) % 40**1) // 40**0]
+        raw += [word // 40 ** 2,
+                (word % 40 ** 2) // 40 ** 1,
+                ((word % 40 ** 2) % 40 ** 1) // 40 ** 0]
 
     return bytes(raw)
 
 
-def tokenize(enc):
+def tokenize(enc: list[int] | bytes):
     buffer = b''
     for code in iter(enc):
         if buffer:

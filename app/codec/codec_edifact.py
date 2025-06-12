@@ -1,9 +1,7 @@
-__all__ = []
-
 import codecs
 
 
-def pack(ascii):
+def pack(ascii: bytes) -> bytes:
     assert len(ascii) % 4 == 0
 
     raw = [code & 0x3F for code in ascii if 31 <= code <= 94]
@@ -21,7 +19,7 @@ def pack(ascii):
     return bytes(packed)
 
 
-def encode(msg):
+def encode(msg: str) -> tuple[bytes, int]:
     l_packable = ((len(msg) + 1) // 4) * 4
 
     enc = b''
@@ -36,7 +34,7 @@ def encode(msg):
     return enc, len(enc)
 
 
-def decode(enc):
+def decode(enc: bytes | bytearray) -> tuple[str, int]:
     edifact = list(enc)
     if edifact[0] != 0xF0:
         if len(edifact) <= 2:
@@ -70,7 +68,7 @@ def decode(enc):
     return msg, len(msg)
 
 
-def search_codec(encoding_name):
+def search_codec(encoding_name: str) -> codecs.CodecInfo | None:
     if encoding_name != 'datamatrix.edifact':
         return None
 

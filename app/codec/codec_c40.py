@@ -1,5 +1,3 @@
-__all__ = []
-
 import codecs
 from .codec_common import set1, set2, add_inverse_lookup
 from .codec_common import encode_text_mode, decode_text_mode
@@ -18,20 +16,17 @@ codepage = {**codepage,
 add_inverse_lookup(codepage)
 
 
-def encode(msg):
+def encode(msg: str) -> tuple[bytes, int]:
     return encode_text_mode(msg, codepage, b'\xE6', True)
 
 
-def decode(enc):
-    try:
-        msg, length = decode_text_mode(enc, codepage, b'\xE6', True)
-    except ValueError:
-        raise ValueError(f'{enc} is not valid C40 code')
+def decode(enc) -> tuple[str, int]:
+    msg, length = decode_text_mode(enc, codepage, b'\xE6', True)
 
     return msg, length
 
 
-def search_codec(encoding_name):
+def search_codec(encoding_name: str) -> codecs.CodecInfo | None:
     if encoding_name != 'datamatrix.c40':
         return None
 

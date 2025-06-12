@@ -2,8 +2,7 @@ from svg_renderer import svg_from_matrix
 from matrix import matrix
 
 
-
-class DataMatrix():
+class DataMatrix:
 
     def __init__(self, msg, rect=False,
                  codecs=['ascii', 'C40', 'text', 'X12', 'edifact']):
@@ -19,9 +18,9 @@ class DataMatrix():
     def __repr__(self):
         return f"<DataMatrix: {self.message!r}>"
 
-    def svg(self, fg="#000", bg="fff", margin=1):
-        return svg_from_matrix(self.matrix,fg=fg, bg=bg, margin=margin)
+    def svg(self, fg: str = "#000", bg: str = "fff", margin: int = 1) -> str:
+        return svg_from_matrix(self.matrix, fg=fg, bg=bg, margin=margin)
 
     @property
-    def matrix(self):
+    def matrix(self) -> list[list]:
         return matrix(self.message, self.codecs, self.rectangular)

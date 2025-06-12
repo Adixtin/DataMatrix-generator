@@ -1,8 +1,5 @@
-__all__ = ['encode', 'decode', 'search_codec']
-
 
 import codecs
-from typing import Tuple, Optional
 
 DIGITS = '0123456789'
 DOUBLE_DIGIT_OFFSET = 130
@@ -10,10 +7,7 @@ MAX_DOUBLE_DIGIT_VALUE = 230
 ASCII_OFFSET = 1
 
 
-def encode(msg):
-    if not isinstance(msg, str):
-        raise TypeError("Input must be a string")
-
+def encode(msg: str) -> tuple[bytes, int]:
     encoded = []
     i = 0
 
@@ -35,10 +29,7 @@ def encode(msg):
     return bytes(encoded), len(encoded)
 
 
-def decode(code):
-    if not isinstance(code, (bytes, bytearray)):
-        raise TypeError("Input must be bytes or bytearray")
-
+def decode(code: bytes | bytearray) -> tuple[str, int]:
     decoded_chars = []
 
     for i, byte_val in enumerate(code):
@@ -62,7 +53,7 @@ def decode(code):
     return decoded_string, len(code)
 
 
-def search_codec(encoding_name: str) -> Optional[codecs.CodecInfo]:
+def search_codec(encoding_name: str) -> codecs.CodecInfo | None:
     if encoding_name != 'datamatrix.ascii':
         return None
 

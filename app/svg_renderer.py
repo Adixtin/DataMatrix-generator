@@ -12,13 +12,13 @@ svg_template = (
 )
 
 
-def svg_from_matrix(matrix, fg='#000', bg='#FFF', margin=1):
+def svg_from_matrix(matrix: list[list[int]], fg: str = '#000', bg: str = '#FFF', margin: int = 1) -> str:
     width = len(matrix[0]) + 2 * margin
     height = len(matrix) + 2 * margin
     x0 = 1 - margin
     y0 = 1 - margin
 
-    def path_cmds():
+    def path_cmds() -> str:
         cmds = []
         for y, line in enumerate(matrix):
             i = 0

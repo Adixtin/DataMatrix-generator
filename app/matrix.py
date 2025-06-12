@@ -1,9 +1,9 @@
 import importlib
 
-from ecc import *
+from ecc import generate_gf, generate_rs_poly, apply_rs_encoding
 
 
-def encode_message(msg, codecs):
+def encode_message(msg: str, codecs: list[str]) -> list[int]:
     encoded_candidates = []
 
     for codec in codecs:
@@ -28,7 +28,7 @@ def encode_message(msg, codecs):
     return min(encoded_candidates, key=len)
 
 
-def normalize_encoded_data(encoded_data):
+def normalize_encoded_data(encoded_data: list[int | str | bytes]) -> dict[int, int]:
     encoded_dict = {i: val for i, val in enumerate(encoded_data)}
 
     for i, val in encoded_dict.items():
@@ -40,7 +40,7 @@ def normalize_encoded_data(encoded_data):
     return encoded_dict
 
 
-def calculate_layout_rectangular(data_length):
+def calculate_layout_rectangular(data_length: int) -> tuple[int, int, int, int, int]:
     sizes = [16, 7, 28, 11, 24, 14, 32, 18, 32, 24, 44, 28]
     layout_index = -1
     num_cols = 1
@@ -61,7 +61,7 @@ def calculate_layout_rectangular(data_length):
     return width, height, layout_index, 1, num_cols
 
 
-def calculate_layout_square(data_length):
+def calculate_layout_square(data_length: int) -> tuple[int, int, int, int, int, int]:
     width = height = 6
     step = 2
     layout_index = -1
@@ -94,7 +94,7 @@ def calculate_layout_square(data_length):
     return width, height, layout_index, interleaved_blocks, num_rows, num_cols
 
 
-def add_padding(encoded_dict, data_length, block_capacity, ecc_codewords_total):
+def add_padding(encoded_dict: dict[int, int], data_length: int, block_capacity: int, ecc_codewords_total: int) -> int:
     if data_length < block_capacity - ecc_codewords_total:
         encoded_dict[data_length] = 129
         data_length += 1
@@ -106,7 +106,7 @@ def add_padding(encoded_dict, data_length, block_capacity, ecc_codewords_total):
     return data_length
 
 
-def add_finder_patterns(matrix_map, width, height, num_rows, num_cols, module_width, module_height):
+def add_finder_patterns(matrix_map: dict[int, dict[int, int]], width: int, height: int, num_rows: int, num_cols: int, module_width: int, module_height: int) -> None:
     def set_bit(x, y):
         matrix_map[y] = matrix_map.get(y, {})
         matrix_map[y][x] = 1
@@ -124,10 +124,11 @@ def add_finder_patterns(matrix_map, width, height, num_rows, num_cols, module_wi
                 set_bit(i + module_width + 1, j + (j // module_height | 0) * 2)
 
 
-def get_layout_coordinates(row, col, width, height, module_width, module_height):
+def get_layout_coordinates(row: int, col: int, width: int, height: int,
+                           module_width: int, module_height: int) -> list[int]:
     layout_pattern = [0, 0, -1, 0, -2, 0, 0, -1, -1, -1, -2, -1, -1, -2, -2, -2]
 
-    if (row == height - 3 and col == -1):
+    if row == height - 3 and col == -1:
         return [width, 6 - height, width, 5 - height, width, 4 - height, width, 3 - height,
                 width - 1, 3 - height, 3, 2, 2, 2, 1, 2]
     elif row == height + 1 and col == 1 and (width & 7) == 0 and (height & 7) == 6:
@@ -145,8 +146,7 @@ def get_layout_coordinates(row, col, width, height, module_width, module_height)
         return layout_pattern
 
 
-def place_data_bits(matrix_map, encoded_dict, width, height, module_width, module_height, block_capacity):
-
+def place_data_bits(matrix_map: dict[int, dict[int, int]], encoded_dict: dict[int, int], width: int, height: int, module_width: int, module_height: int, block_capacity: int) -> None:
     def set_bit(x, y):
         matrix_map[y] = matrix_map.get(y, {})
         matrix_map[y][x] = 1
@@ -157,7 +157,7 @@ def place_data_bits(matrix_map, encoded_dict, width, height, module_width, modul
     i = 0
 
     while i < block_capacity:
-        if (row == height - 3 and col == -1):
+        if row == height - 3 and col == -1:
             pass
         elif row == height + 1 and col == 1 and (width & 7) == 0 and (height & 7) == 6:
             pass
@@ -206,7 +206,6 @@ def place_data_bits(matrix_map, encoded_dict, width, height, module_width, modul
 
 
 def add_corner_pattern(matrix_map, width):
-
     def set_bit(x, y):
         matrix_map[y] = matrix_map.get(y, {})
         matrix_map[y][x] = 1

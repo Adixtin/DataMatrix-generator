@@ -1,4 +1,4 @@
-def generate_gf():
+def generate_gf() -> tuple[list[int], list[int]]:
     antilog_table = [0] * 255
     log_table = [0] * 256
     value = 1
@@ -11,7 +11,7 @@ def generate_gf():
     return antilog_table, log_table
 
 
-def generate_rs_poly(ecc_codewords, antilog_table, log_table):
+def generate_rs_poly(ecc_codewords: int, antilog_table: list, log_table: list) -> list[int]:
     reed_solomon = [0] * (ecc_codewords + 1)
     reed_solomon[ecc_codewords] = 0
     for i in range(1, ecc_codewords + 1):
@@ -21,7 +21,7 @@ def generate_rs_poly(ecc_codewords, antilog_table, log_table):
     return reed_solomon
 
 
-def apply_rs_encoding(enc, msg_len, blocks, ecc_codewords, reed_solomon, antilog_table, log_table):
+def apply_rs_encoding(enc: dict[int, int], msg_len: int, blocks: int, ecc_codewords: int, reed_solomon: list[int], antilog_table: list[int], log_table: list[int]) -> None:
     remainder = [0] * 70
     for c in range(blocks):
         for i in range(ecc_codewords + 1):
