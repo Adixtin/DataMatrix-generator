@@ -1,5 +1,3 @@
-# svg_renderer.py
-
 svg_template = (
     '<?xml version="1.0" encoding="utf-8" ?>'
     '<svg baseProfile="tiny" version="1.2" '

@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     svg_code = dm.svg()
 
-    with open(f'generated_datamatrixes/{datamatrix_name}.svg', "w", encoding="utf-8") as f:
+    with open(f'{datamatrix_name}.svg', "w", encoding="utf-8") as f:
         f.write(svg_code)
 
     print(f'SVG saved as {datamatrix_name}.svg')
