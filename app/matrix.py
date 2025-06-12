@@ -8,7 +8,7 @@ def encode_message(msg, codecs):
 
     for codec in codecs:
         try:
-            module = importlib.import_module(f"app.codec.codec_{codec.lower()}")
+            module = importlib.import_module(f"codec.codec_{codec.lower()}")
             encoded_result = module.encode(msg)
 
             if isinstance(encoded_result, tuple):
